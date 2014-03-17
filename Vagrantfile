@@ -10,6 +10,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provider :virtualbox do |v, override|
    # Disable the base shared folder, guest additions are unavailable.
     override.vm.synced_folder ".", "/vagrant", disabled: true
+    v.customize ["modifyvm", :id, "--nic2",    "intnet"]
   end
 
   config.vm.provision "shell", path: "bootstrap.sh"     # Bootstrapping: package installation (phase:1)
