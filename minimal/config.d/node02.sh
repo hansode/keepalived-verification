@@ -65,18 +65,6 @@ service network restart
 
 ##
 
-prefix_len=24
-
-case "${node}" in
-  node01)
-    ;;
-  node02)
-    ping -c 1 -W 3 10.126.5.${partner_ip4}
-    ;;
-esac
-
-##
-
 install_keepalived_conf eth1 vip=10.126.5.${virtual_ip4} prefix=24
 
 chkconfig --list keepalived
@@ -84,3 +72,16 @@ chkconfig keepalived on
 chkconfig --list keepalived
 
 service keepalived restart
+
+##
+
+prefix_len=24
+
+case "${node}" in
+  node01)
+    ;;
+  node02)
+    ping -c 1 -W 3 10.126.5.${partner_ip4}
+    ping -c 1 -W 3 10.126.5.${virtual_ip4}
+    ;;
+esac
