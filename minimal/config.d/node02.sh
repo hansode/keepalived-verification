@@ -17,6 +17,36 @@ function append_networking_param() {
 	EOS
 }
 
+function render_keepalived_conf() {
+  local ifname=${1:-eth0}
+
+  cat <<-EOS
+	! Configuration File for keepalived
+	
+	vrrp_instance VI_1 {
+	    interface ${ifname}
+	    state ${state:-BACKUP}
+	    virtual_router_id ${virtual_router_id:-17}
+	    priority ${priority:-100}
+	    advert_int ${advert_int:-1}
+	    authentication {
+	        auth_type ${auth_type:-PASS}
+	        auth_pass ${auth_pass:-1111}
+	    }
+	    virtual_ipaddress {
+	        ${vip}/${prefix:-24} dev ${ifname}
+	    }
+	}
+	EOS
+}
+
+function install_keepalived_conf() {
+  local ifname=${1:-eth0}
+  shift; eval local ${@}
+
+  render_keepalived_conf ${ifname} ${@} | tee /etc/keepalived/keepalived.conf
+}
+
 #node=node01
 node=node02
 
@@ -44,3 +74,13 @@ case "${node}" in
     ping -c 1 -W 3 10.126.5.${partner_ip4}
     ;;
 esac
+
+##
+
+install_keepalived_conf eth1 vip=10.126.5.${virtual_ip4} prefix=24
+
+chkconfig --list keepalived
+chkconfig keepalived on
+chkconfig --list keepalived
+
+service keepalived restart
