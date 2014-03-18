@@ -13,3 +13,9 @@ Getting Started
 ```
 $ vagrant up
 ```
+
+References
+----------
+
++ http://www.keepalived.org/
+  + http://www.keepalived.org/documentation.html
